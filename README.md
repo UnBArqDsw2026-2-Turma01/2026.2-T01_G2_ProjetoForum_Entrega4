@@ -1,10 +1,28 @@
-# RepositorioTemplate
+# G2_ProjetoForum | Entrega 04 — Arquitetura e Reutilização de Software
 
-Repositório que deve ser utilizado como template inicial pelos grupos da matéria de Arquitetura e Desenho de Software.
+Repositório do Grupo 02 da disciplina **FGA0208 — Arquitetura e Desenho de Software** (UnB/FCTE), destinado aos artefatos da Quarta Entrega do projeto **G2_ProjetoForum**.
 
-## Introdução
+## Sobre a Entrega
 
-Este repositório traz um template de repo de documentação a ser seguido pelos grupos de arquitetura e desenho de software.
+Esta entrega segue o foco **Documento de Arquitetura (DAS)**, adotando o template RUP (Modelo de Visões 4+1) com aprofundamento na **Visão Lógica** e na **Visão de Implementação**. Como comprovação prática do estilo arquitetural **N-Camadas** (`Apresentação`, `Negócio` e `Persistência`), foi implementado em Node.js nativo o módulo de criação e listagem de publicações.
+
+## Informações do Projeto
+
+- **Instituição:** Universidade de Brasília (UnB — FCTE)
+- **Disciplina:** FGA0208 — Arquitetura e Desenho de Software
+- **Turma:** T01 — 2026.2
+- **Grupo:** 02 (`G2_ProjetoForum`)
+- **Entrega:** 04 — Arquitetura e Reutilização de Software (DAS)
+
+## Participante
+
+| Matrícula | Aluno | GitHub |
+| :--- | :--- | :--- |
+| 23/1012227 | Guilherme Moura da Silva Neto | [@Guilherme-Moura](https://github.com/Guilherme-Moura) |
+
+## Documentação (GitHub Pages)
+
+**[Acessar a documentação completa no GitHub Pages](https://unbarqdsw2026-2-turma01.github.io/2026.2-T01_G2_ProjetoForum_Entrega4/)**
 
 ## Tecnologia
 
