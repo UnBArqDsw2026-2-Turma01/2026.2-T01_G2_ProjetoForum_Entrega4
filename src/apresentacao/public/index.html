@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>G2_ProjetoForum — Publicações</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f5f7fa;
+      color: #1f2937;
+      margin: 0;
+      padding: 2rem 1rem;
+      line-height: 1.5;
+    }
+    main {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+    header {
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid #d1d5db;
+      padding-bottom: 0.75rem;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+    header p {
+      margin: 0.25rem 0 0;
+      color: #4b5563;
+      font-size: 0.95rem;
+    }
+    .card {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+    .campo {
+      margin-bottom: 0.9rem;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+      font-size: 0.9rem;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 0.55rem 0.7rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font: inherit;
+    }
+    textarea {
+      min-height: 95px;
+      resize: vertical;
+    }
+    button {
+      background: #1d4ed8;
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      padding: 0.6rem 1.2rem;
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #1e40af;
+    }
+    #mensagem {
+      margin-top: 0.9rem;
+      padding: 0.65rem 0.85rem;
+      border-radius: 6px;
+      display: none;
+      font-size: 0.9rem;
+    }
+    #mensagem.sucesso {
+      display: block;
+      background: #dcfce7;
+      color: #166534;
+      border: 1px solid #86efac;
+    }
+    #mensagem.erro {
+      display: block;
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fca5a5;
+    }
+    .publicacao {
+      border-bottom: 1px solid #e5e7eb;
+      padding: 0.9rem 0;
+    }
+    .publicacao:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .publicacao h3 {
+      margin: 0 0 0.25rem;
+      font-size: 1.1rem;
+    }
+    .meta {
+      font-size: 0.85rem;
+      color: #6b7280;
+      margin-bottom: 0.5rem;
+    }
+    .badge {
+      background: #e5e7eb;
+      color: #374151;
+      border-radius: 4px;
+      padding: 0.1rem 0.4rem;
+      font-family: monospace;
+      margin-right: 0.4rem;
+    }
+    .corpo {
+      margin: 0 0 0.4rem;
+      white-space: pre-wrap;
+    }
+    .fonte {
+      font-size: 0.85rem;
+    }
+    .vazio {
+      color: #6b7280;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>G2_ProjetoForum</h1>
+      <p>Criação e listagem de publicações — Arquitetura em N-Camadas (Apresentação → Negócio → Persistência)</p>
+    </header>
+
+    <section class="card">
+      <h2>Nova Publicação</h2>
+      <form id="form-publicacao" novalidate>
+        <div class="campo">
+          <label for="autor">Autor *</label>
+          <input id="autor" name="autor" type="text" placeholder="Ex.: joao" />
+        </div>
+        <div class="campo">
+          <label for="titulo">Título *</label>
+          <input id="titulo" name="titulo" type="text" placeholder="Ex.: Separação de camadas no Node.js" />
+        </div>
+        <div class="campo">
+          <label for="corpo">Corpo *</label>
+          <textarea id="corpo" name="corpo" placeholder="Escreva o conteúdo da publicação..."></textarea>
+        </div>
+        <div class="campo">
+          <label for="fonte">Fonte (opcional)</label>
+          <input id="fonte" name="fonte" type="url" placeholder="https://..." />
+        </div>
+        <button type="submit">Publicar</button>
+      </form>
+      <div id="mensagem" role="status"></div>
+    </section>
+
+    <section class="card">
+      <h2>Publicações Recentes</h2>
+      <div id="lista-publicacoes">
+        <p class="vazio">Carregando publicações...</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const form = document.getElementById('form-publicacao');
+    const mensagemEl = document.getElementById('mensagem');
+    const listaEl = document.getElementById('lista-publicacoes');
+
+    function exibirMensagem(texto, tipo) {
+      mensagemEl.textContent = texto;
+      mensagemEl.className = tipo;
+    }
+
+    function formatarData(iso) {
+      return new Date(iso).toLocaleString('pt-BR');
+    }
+
+    function renderizarPublicacoes(publicacoes) {
+      listaEl.textContent = '';
+
+      if (publicacoes.length === 0) {
+        const vazio = document.createElement('p');
+        vazio.className = 'vazio';
+        vazio.textContent = 'Nenhuma publicação cadastrada ainda.';
+        listaEl.appendChild(vazio);
+        return;
+      }
+
+      for (const pub of [...publicacoes].reverse()) {
+        const artigo = document.createElement('article');
+        artigo.className = 'publicacao';
+
+        const titulo = document.createElement('h3');
+        titulo.textContent = pub.titulo;
+
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+
+        const badge = document.createElement('span');
+        badge.className = 'badge';
+        badge.textContent = pub.id;
+
+        meta.appendChild(badge);
+        meta.append(`Por ${pub.autor} • ${formatarData(pub.dataCriacao)}`);
+
+        const corpo = document.createElement('p');
+        corpo.className = 'corpo';
+        corpo.textContent = pub.corpo;
+
+        artigo.append(titulo, meta, corpo);
+
+        if (pub.fonte) {
+          const fonteP = document.createElement('p');
+          fonteP.className = 'fonte';
+          fonteP.append('Fonte: ');
+
+          const link = document.createElement('a');
+          link.href = pub.fonte;
+          link.target = '_blank';
+          link.rel = 'noopener noreferrer';
+          link.textContent = pub.fonte;
+
+          fonteP.appendChild(link);
+          artigo.appendChild(fonteP);
+        }
+
+        listaEl.appendChild(artigo);
+      }
+    }
+
+    async function carregarPublicacoes() {
+      const resposta = await fetch('/api/publicacoes');
+      const dados = await resposta.json();
+      renderizarPublicacoes(dados);
+    }
+
+    form.addEventListener('submit', async (evento) => {
+      evento.preventDefault();
+      mensagemEl.className = '';
+
+      const payload = {
+        autor: form.autor.value,
+        titulo: form.titulo.value,
+        corpo: form.corpo.value,
+        fonte: form.fonte.value,
+      };
+
+      const resposta = await fetch('/api/publicacoes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const dados = await resposta.json();
+
+      if (!resposta.ok) {
+        exibirMensagem(`Erro (${resposta.status}): ${dados.erro}`, 'erro');
+        return;
+      }
+
+      exibirMensagem(`Publicação "${dados.titulo}" criada com ID ${dados.id}.`, 'sucesso');
+      form.reset();
+      await carregarPublicacoes();
+    });
+
+    carregarPublicacoes();
+  </script>
+</body>
+</html>

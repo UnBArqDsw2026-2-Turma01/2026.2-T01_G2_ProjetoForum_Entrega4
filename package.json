@@ -1,0 +1,9 @@
+{
+  "name": "g2-projeto-forum",
+  "version": "1.0.0",
+  "description": "G2_ProjetoForum - Arquitetura em N-Camadas (Entrega 4)",
+  "type": "module",
+  "scripts": {
+    "start": "node src/apresentacao/ForumController.js"
+  }
+}
